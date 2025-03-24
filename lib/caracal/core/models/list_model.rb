@@ -18,16 +18,19 @@ module Caracal
         
         # constants
         const_set(:DEFAULT_LIST_TYPE,  :unordered)
+        const_set(:DEFAULT_LIST_NAME, nil)
         const_set(:DEFAULT_LIST_LEVEL, 0)
         
         # accessors
         attr_reader :list_type
+        attr_reader :list_name
         attr_reader :list_level
         
         
         # initialization
         def initialize(options={}, &block)
           @list_type  = DEFAULT_LIST_TYPE
+          @list_name  = DEFAULT_LIST_NAME
           @list_level = DEFAULT_LIST_LEVEL
           
           super options, &block
@@ -79,6 +82,13 @@ module Caracal
             instance_variable_set("@list_#{ m }", value.to_i)
           end
         end
+        
+        # strings
+        [:name].each do |m|
+          define_method "#{ m }" do |value|
+            instance_variable_set("@list_#{ m }", value.to_s)
+          end
+        end
 
         # symbols
         [:type].each do |m|
@@ -95,6 +105,7 @@ module Caracal
           options = Caracal::Utilities.extract_options!(args)
           options.merge!({ content: args.first }) if args.first
           options.merge!({ type:    list_type  })
+          options.merge!({ name:    list_name  })
           options.merge!({ level:   list_level })
           
           model = Caracal::Core::Models::ListItemModel.new(options, &block)
@@ -122,7 +133,7 @@ module Caracal
         private
         
         def option_keys
-          [:type, :level]
+          [:type, :name, :level]
         end
         
       end

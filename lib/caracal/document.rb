@@ -163,6 +163,14 @@ module Caracal
     end
 
 
+    def list_style_id_for_list_style_name(list_style_name)
+      list_styles.each_with_index do |model, i|
+        return i + 1 if model.style_name == list_style_name
+      end
+      nil
+    end
+
+
     #------------------------------------------------------
     # Private Instance Methods
     #------------------------------------------------------

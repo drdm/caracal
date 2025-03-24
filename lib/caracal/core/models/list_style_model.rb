@@ -28,7 +28,10 @@ module Caracal
         attr_reader :style_align
         attr_reader :style_left
         attr_reader :style_indent
+        attr_reader :style_hanging
         attr_reader :style_restart
+        attr_reader :style_name
+        attr_reader :style_paragraph_style
         
         
         # initialization
@@ -66,14 +69,14 @@ module Caracal
         #=============== SETTERS ==============================
         
         # integers
-        [:level, :left, :indent, :start, :restart].each do |m|
+        [:level, :left, :indent, :hanging, :start, :restart].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@style_#{ m }", value.to_i)
           end
         end
         
         # strings
-        [:format, :value].each do |m|
+        [:format, :value, :name, :paragraph_style].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@style_#{ m }", value.to_s)
           end
@@ -89,8 +92,8 @@ module Caracal
         
         #=============== STATE ================================
         
-        def matches?(type, level)
-          style_type == type.to_s.to_sym && style_level == level.to_i
+        def matches?(type, name, level)
+          style_type == type.to_s.to_sym && style_name == name && style_level == level.to_i
         end
         
         
@@ -108,7 +111,7 @@ module Caracal
         private
         
         def option_keys
-          [:type, :level, :format, :value, :align, :left, :indent, :start]
+          [:type, :level, :format, :value, :align, :left, :indent, :hanging, :start, :restart, :name, :paragraph_style]
         end
         
       end

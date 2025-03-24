@@ -21,31 +21,34 @@ module Caracal
           xml['w'].numbering root_options do
             
             # add abstract definitions
-            document.toplevel_lists.each_with_index do |model, i|
+            document.list_styles.each_with_index do |model, i|
+              next if model.style_level != 0
               xml['w'].abstractNum({ 'w:abstractNumId' => i + 1 }) do
                 xml['w'].multiLevelType({ 'w:val' => 'hybridMultilevel' })
-                model.level_map.each do |(level, type)|
-                  if s = document.find_list_style(type, level)
-                    xml['w'].lvl({ 'w:ilvl' => s.style_level }) do
-                      xml['w'].start({ 'w:val' => s.style_start })
-                      xml['w'].numFmt({ 'w:val' => s.style_format })
-                      xml['w'].lvlRestart({ 'w:val' => s.style_restart })
-                      xml['w'].lvlText({ 'w:val' => s.style_value })
-                      xml['w'].lvlJc({ 'w:val' => s.style_align })
-                      xml['w'].pPr do
-                        xml['w'].ind({ 'w:left' => s.style_left, 'w:firstLine' => s.style_indent })
-                      end
-                      xml['w'].rPr do
-                        xml['w'].u({ 'w:val' => 'none' })
-                      end
+                level = model.style_level
+                while s = document.find_list_style(model.style_type, model.style_name, level)
+                  xml['w'].lvl({ 'w:ilvl' => s.style_level }) do
+                    xml['w'].start({ 'w:val' => s.style_start })
+                    xml['w'].numFmt({ 'w:val' => s.style_format })
+                    xml['w'].pStyle({ 'w:val' => s.style_paragraph_style })  unless s.style_paragraph_style.nil?
+                    xml['w'].lvlRestart({ 'w:val' => s.style_restart })
+                    xml['w'].lvlText({ 'w:val' => s.style_value })
+                    xml['w'].lvlJc({ 'w:val' => s.style_align })
+                    xml['w'].pPr do
+                      xml['w'].ind(indentation_options(s)) unless indentation_options(s).nil?
+                    end
+                    xml['w'].rPr do
+                      xml['w'].u({ 'w:val' => 'none' })
                     end
                   end
+                  level += 1
                 end
               end
             end
 
             # bind individual tables to abstract definitions
-            document.toplevel_lists.each_with_index do |model, i|
+            document.list_styles.each_with_index do |model, i|
+              next if model.style_level != 0
               xml['w'].num({ 'w:numId' => i + 1 }) do
                 xml['w'].abstractNumId({ 'w:val' => i + 1 })
               end
@@ -62,6 +65,20 @@ module Caracal
       # Private Methods
       #-------------------------------------------------------------
       private
+
+      def indentation_options(style)
+        left    = style.style_left
+        first   = style.style_indent
+        hanging = style.style_hanging
+        options = nil
+        if [left, first, hanging].compact.size > 0
+          options                  = {}
+          options['w:left']        = left    unless left.nil?
+          options['w:firstLine']   = first   unless first.nil?
+          options['w:hanging']     = hanging unless hanging.nil?
+        end
+        options
+      end
 
       def root_options
         {

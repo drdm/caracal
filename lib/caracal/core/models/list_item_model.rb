@@ -22,6 +22,7 @@ module Caracal
         # readers (create aliases for superclass methods to conform
         # to expected naming convention.)
         attr_reader  :list_item_type
+        attr_reader  :list_item_name
         attr_reader  :list_item_level
         alias_method :list_item_style,     :paragraph_style
         alias_method :list_item_color,     :paragraph_color
@@ -31,6 +32,11 @@ module Caracal
         alias_method :list_item_underline, :paragraph_underline
         alias_method :list_item_bgcolor,   :paragraph_bgcolor
 
+        
+        # initialization
+        def initialize(options={}, &block)
+          super options, &block
+        end
 
 
         #-------------------------------------------------------------
@@ -46,6 +52,13 @@ module Caracal
           end
         end
 
+        # strings
+        [:name].each do |m|
+          define_method "#{ m }" do |value|
+            instance_variable_set("@list_item_#{ m }", value.to_s)
+          end
+        end
+
         # symbols
         [:type].each do |m|
           define_method "#{ m }" do |value|
@@ -58,7 +71,7 @@ module Caracal
 
         # .ol
         def ol(options={}, &block)
-          options.merge!({ type: :ordered, level: list_item_level + 1 })
+          options.merge!({ type: :ordered, name: list_item_name, level: list_item_level + 1 })
 
           model = Caracal::Core::Models::ListModel.new(options, &block)
           if model.valid?
@@ -71,7 +84,7 @@ module Caracal
 
         # .ul
         def ul(options={}, &block)
-          options.merge!({ type: :unordered, level: list_item_level + 1 })
+          options.merge!({ type: :unordered, name: list_item_name, level: list_item_level + 1 })
 
           model = Caracal::Core::Models::ListModel.new(options, &block)
           if model.valid?
@@ -98,7 +111,7 @@ module Caracal
         private
 
         def option_keys
-          [:type, :level, :content, :style, :color, :size, :bold, :italic, :underline, :bgcolor]
+          [:type, :name, :level, :content, :style, :color, :size, :bold, :italic, :underline, :bgcolor]
         end
 
       end

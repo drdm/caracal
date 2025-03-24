@@ -77,6 +77,11 @@ module Caracal
                   xml['w'].contextualSpacing({ 'w:val' => '1' })
                   xml['w'].jc({ 'w:val' => s.style_align.to_s }) unless s.style_align.nil?
                   xml['w'].ind(indentation_options(s)) unless indentation_options(s).nil?
+                  xml['w'].numPr do
+                    xml['w'].ilvl({ 'w:val' => s.style_outline_level }) unless s.style_outline_level.nil?  
+                    xml['w'].numId({ 'w:val' => document.list_style_id_for_list_style_name(s.style_list_style) }) unless s.style_list_style.nil?  
+                  end
+                  xml['w'].outlineLvl({ 'w:val' => s.style_outline_level }) unless s.style_outline_level.nil?
                 end
                 xml['w'].rPr do
                   xml['w'].rFonts(font_options(s)) unless s.style_font.nil?
@@ -127,15 +132,17 @@ module Caracal
       end
 
       def indentation_options(style, default=false)
-        left    = (default) ? style.style_indent_left.to_i  : style.style_indent_left
-        right   = (default) ? style.style_indent_right.to_i : style.style_indent_right
-        first   = (default) ? style.style_indent_first.to_i : style.style_indent_first
+        left    = (default) ? style.style_indent_left.to_i    : style.style_indent_left
+        right   = (default) ? style.style_indent_right.to_i   : style.style_indent_right
+        first   = (default) ? style.style_indent_first.to_i   : style.style_indent_first
+        hanging = (default) ? style.style_indent_hanging.to_i : style.style_indent_hanging
         options = nil
-        if [left, right, first].compact.size > 0
+        if [left, right, first, hanging].compact.size > 0
           options                  = {}
           options['w:left']        = left    unless left.nil?
           options['w:right']       = right   unless right.nil?
           options['w:firstLine']   = first   unless first.nil?
+          options['w:hanging']     = hanging unless hanging.nil?
         end
         options
       end

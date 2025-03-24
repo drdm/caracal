@@ -50,6 +50,9 @@ module Caracal
         attr_reader :style_indent_left
         attr_reader :style_indent_right
         attr_reader :style_indent_first
+        attr_reader :style_indent_hanging
+        attr_reader :style_list_style
+        attr_reader :style_outline_level
 
         # initialization
         def initialize(options={}, &block)
@@ -90,14 +93,14 @@ module Caracal
         end
 
         # integers
-        [:bottom, :size, :line, :top, :indent_left, :indent_right, :indent_first].each do |m|
+        [:bottom, :size, :line, :top, :indent_left, :indent_right, :indent_first, :indent_hanging, :outline_level].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@style_#{ m }", value.to_i)
           end
         end
 
         # strings
-        [:id, :type, :name, :color, :font].each do |m|
+        [:id, :type, :name, :base, :next, :color, :font, :list_style].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@style_#{ m }", value.to_s)
           end
@@ -140,6 +143,8 @@ module Caracal
 
         def option_keys
           [ :type,
+            :base,
+            :next,
             :bold,
             :italic,
             :underline,
@@ -155,7 +160,10 @@ module Caracal
             :align,
             :indent_left,
             :indent_right,
-            :indent_first ]
+            :indent_first,
+            :indent_hanging,
+            :list_style,
+            :outline_level ]
         end
 
       end
