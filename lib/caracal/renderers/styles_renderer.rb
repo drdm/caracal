@@ -74,7 +74,7 @@ module Caracal
                   xml['w'].keepLines({ 'w:val' => '0' })
                   xml['w'].widowControl({ 'w:val' => '1' })
                   xml['w'].spacing(spacing_options(s)) unless spacing_options(s).nil?
-                  xml['w'].contextualSpacing({ 'w:val' => '1' })
+                  xml['w'].contextualSpacing({ 'w:val' => '0' })
                   xml['w'].jc({ 'w:val' => s.style_align.to_s }) unless s.style_align.nil?
                   xml['w'].ind(indentation_options(s)) unless indentation_options(s).nil?
                   xml['w'].numPr do
