@@ -68,7 +68,7 @@ module Caracal
       # This method returns a commonly used set of attributes for text run nodes.
       #
       def run_options
-        { 'w:rsidR' => '00000000', 'w:rsidRPr' => '00000000', 'w:rsidDel' => '00000000' }
+        { 'w:rsidR' => '00000000', 'w:rsidRPr' => '00000000' }
       end
 
       # These save options force Nokogiri to remove indentation and
