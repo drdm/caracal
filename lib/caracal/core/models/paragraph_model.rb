@@ -27,11 +27,13 @@ module Caracal
         attr_reader :paragraph_italic
         attr_reader :paragraph_underline
         attr_reader :paragraph_bgcolor
+        attr_reader :paragraph_list_style
+        attr_reader :paragraph_list_level
 
         # initialization
         def initialize(options={}, &block)
           content = options.delete(:content) { "" }
-          text content, options.dup, &block
+          text content, options.dup.delete(:style), &block
           super options, &block
         end
 
@@ -70,14 +72,14 @@ module Caracal
         end
 
         # integers
-        [:size].each do |m|
+        [:size, :list_level].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@paragraph_#{ m }", value.to_i)
           end
         end
 
         # strings
-        [:bgcolor, :color, :style].each do |m|
+        [:bgcolor, :color, :style, :list_style].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@paragraph_#{ m }", value.to_s)
           end
@@ -176,7 +178,7 @@ module Caracal
         private
 
         def option_keys
-          [:content, :style, :align, :color, :size, :bold, :italic, :underline, :bgcolor]
+          [:content, :style, :align, :color, :size, :bold, :italic, :underline, :bgcolor, :list_style, :list_level]
         end
 
       end

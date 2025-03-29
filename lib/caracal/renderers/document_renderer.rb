@@ -274,7 +274,18 @@ module Caracal
           xml['w'].pPr do
             xml['w'].pStyle({ 'w:val' => model.paragraph_style })  unless model.paragraph_style.nil?
             xml['w'].contextualSpacing({ 'w:val' => '0' })
-            xml['w'].jc({ 'w:val' => model.paragraph_align })  unless model.paragraph_align.nil?
+            xml['w'].jc({ 'w:val' => model.paragraph_align })  unless model.paragraph_align.nil?            
+
+            if model.paragraph_list_level
+              numbering_definition_id = document.generate_new_numbering_definition_id_for_list_style_name_with_restart_for_level(model.paragraph_list_style, model.paragraph_list_level)
+              if numbering_definition_id
+                xml['w'].numPr do
+                  xml['w'].ilvl({ 'w:val' => model.paragraph_list_level })
+                  xml['w'].numId({ 'w:val' => numbering_definition_id })
+                end
+              end
+            end
+            
             render_run_attributes(xml, model, true)
           end
           model.runs.each do |run|

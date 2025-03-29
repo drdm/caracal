@@ -163,13 +163,38 @@ module Caracal
     end
 
 
-    def list_style_id_for_list_style_name(list_style_name)
+    def numbering_definition_id_for_list_style_name(list_style_name)
       list_styles.each_with_index do |model, i|
         return i + 1 if model.style_name == list_style_name
       end
       nil
     end
 
+    def abstract_numbering_definition_overrides
+      @abstract_numbering_definition_overrides ||= []
+    end
+
+    def generate_new_numbering_definition_id_for_list_style_name_with_restart_for_level(list_style_name, list_level)
+      abstract_numbering_definition_id = numbering_definition_id_for_list_style_name(list_style_name)
+      new_numbering_definition_id = abstract_numbering_definition_id + abstract_numbering_definition_overrides.count + 1
+      abstract_numbering_definition_overrides << [list_style_name, list_level, abstract_numbering_definition_id, new_numbering_definition_id]
+      new_numbering_definition_id
+    end
+
+    def numbering_definition_id_for_list_style_name_with_restart_for_level(list_style_name, list_level)
+      abstract_numbering_definition_overrides.each do |abstract_numbering_definition_override|
+        override_list_style_name, override_list_level, override_abstract_numbering_definition_id, override_numbering_definition_id = abstract_numbering_definition_override
+        return override_numbering_definition_id if override_list_style_name == list_style_name && override_list_level == list_level
+      end
+      nil
+    end
+
+    def numbering_definition_overrides_for_list_style_name(list_style_name)
+      abstract_numbering_definition_overrides.map do |abstract_numbering_definition_override|
+        override_list_style_name, override_list_level, override_abstract_numbering_definition_id, override_numbering_definition_id = abstract_numbering_definition_override
+        abstract_numbering_definition_override if override_list_style_name == list_style_name
+      end
+    end
 
     #------------------------------------------------------
     # Private Instance Methods

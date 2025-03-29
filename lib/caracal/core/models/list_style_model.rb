@@ -12,15 +12,18 @@ module Caracal
         #-------------------------------------------------------------
         
         # constants
-        const_set(:TYPE_MAP,              { ordered: 1, unordered: 2 })
-        const_set(:DEFAULT_STYLE_LEFT,    720)      # units in twips 
-        const_set(:DEFAULT_STYLE_INDENT,  360)      # units in twips 
-        const_set(:DEFAULT_STYLE_ALIGN,   :left)
-        const_set(:DEFAULT_STYLE_START,   1)
-        const_set(:DEFAULT_STYLE_RESTART, 1)
+        const_set(:TYPE_MAP,                       { ordered: 1, unordered: 2 })
+        const_set(:LEVEL_TYPE_MAP,                 { single_level: "singleLevel", multi_level: "multilevel", hybrid_multi_level: "hybridMultilevel" })
+        const_set(:DEFAULT_STYLE_LEVEL_TYPE,       :hybrid_multi_level)
+        const_set(:DEFAULT_STYLE_LEFT,             720)      # units in twips 
+        const_set(:DEFAULT_STYLE_INDENT,           360)      # units in twips 
+        const_set(:DEFAULT_STYLE_ALIGN,            :left)
+        const_set(:DEFAULT_STYLE_START,            1)
+        const_set(:DEFAULT_STYLE_RESTART,          nil)
         
         # accessors
         attr_reader :style_type
+        attr_reader :style_level_type
         attr_reader :style_level
         attr_reader :style_format
         attr_reader :style_value
@@ -36,11 +39,12 @@ module Caracal
         
         # initialization
         def initialize(options={}, &block)
-          @style_align   = DEFAULT_STYLE_ALIGN
-          @style_left    = DEFAULT_STYLE_LEFT
-          @style_indent  = DEFAULT_STYLE_INDENT
-          @style_start   = DEFAULT_STYLE_START
-          @style_restart = DEFAULT_STYLE_RESTART
+          @style_align      = DEFAULT_STYLE_ALIGN
+          @style_left       = DEFAULT_STYLE_LEFT
+          @style_level_type = DEFAULT_STYLE_LEVEL_TYPE
+          @style_indent     = DEFAULT_STYLE_INDENT
+          @style_start      = DEFAULT_STYLE_START
+          @style_restart    = DEFAULT_STYLE_RESTART
           
           super options, &block
         end
@@ -54,6 +58,10 @@ module Caracal
           TYPE_MAP.fetch(type.to_s.to_sym)
         end
         
+        def self.formatted_level_type(level_type)
+          LEVEL_TYPE_MAP.fetch(level_type)
+        end
+        
         
         #-------------------------------------------------------------
         # Public Instance Methods
@@ -63,6 +71,10 @@ module Caracal
         
         def formatted_type
           self.class.formatted_type(style_type)
+        end
+        
+        def formatted_level_type
+          self.class.formatted_level_type(style_level_type)
         end
         
         
@@ -83,7 +95,7 @@ module Caracal
         end
         
         # symbols
-        [:type, :align].each do |m|
+        [:type, :level_type, :align].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@style_#{ m }", value.to_s.to_sym)
           end
@@ -111,7 +123,7 @@ module Caracal
         private
         
         def option_keys
-          [:type, :level, :format, :value, :align, :left, :indent, :hanging, :start, :restart, :name, :paragraph_style]
+          [:type, :level, :level_type, :format, :value, :align, :left, :indent, :hanging, :start, :restart, :name, :paragraph_style]
         end
         
       end

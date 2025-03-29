@@ -52,6 +52,7 @@ module Caracal
         attr_reader :style_indent_first
         attr_reader :style_indent_hanging
         attr_reader :style_list_style
+        attr_reader :style_list_level
         attr_reader :style_outline_level
 
         # initialization
@@ -93,7 +94,7 @@ module Caracal
         end
 
         # integers
-        [:bottom, :size, :line, :top, :indent_left, :indent_right, :indent_first, :indent_hanging, :outline_level].each do |m|
+        [:bottom, :size, :line, :top, :indent_left, :indent_right, :indent_first, :indent_hanging, :list_level, :outline_level].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@style_#{ m }", value.to_i)
           end
@@ -163,6 +164,7 @@ module Caracal
             :indent_first,
             :indent_hanging,
             :list_style,
+            :list_level,
             :outline_level ]
         end
 

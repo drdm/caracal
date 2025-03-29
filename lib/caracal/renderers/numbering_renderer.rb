@@ -20,18 +20,22 @@ module Caracal
         builder = ::Nokogiri::XML::Builder.with(declaration_xml) do |xml|
           xml['w'].numbering root_options do
             
-            # add abstract definitions
+            # add abstract numbering definitions
             document.list_styles.each_with_index do |model, i|
               next if model.style_level != 0
-              xml['w'].abstractNum({ 'w:abstractNumId' => i + 1 }) do
-                xml['w'].multiLevelType({ 'w:val' => 'hybridMultilevel' })
+
+              abstract_numbering_definition_id = i + 1
+              xml['w'].abstractNum({ 'w:abstractNumId' => abstract_numbering_definition_id }) do
+                xml['w'].name( { 'w:val' => model.style_name }) if model.style_name
+                xml['w'].multiLevelType({ 'w:val' => model.formatted_level_type })
+                
                 level = model.style_level
                 while s = document.find_list_style(model.style_type, model.style_name, level)
                   xml['w'].lvl({ 'w:ilvl' => s.style_level }) do
                     xml['w'].start({ 'w:val' => s.style_start })
                     xml['w'].numFmt({ 'w:val' => s.style_format })
-                    xml['w'].pStyle({ 'w:val' => s.style_paragraph_style })  unless s.style_paragraph_style.nil?
-                    xml['w'].lvlRestart({ 'w:val' => s.style_restart })
+                    xml['w'].pStyle({ 'w:val' => s.style_paragraph_style }) unless s.style_paragraph_style.nil?
+                    xml['w'].lvlRestart({ 'w:val' => s.style_restart }) unless s.style_restart.nil?
                     xml['w'].lvlText({ 'w:val' => s.style_value })
                     xml['w'].lvlJc({ 'w:val' => s.style_align })
                     xml['w'].pPr do
@@ -46,16 +50,32 @@ module Caracal
               end
             end
 
-            # bind individual tables to abstract definitions
+            # add a numbering definition for each abstract numbering definition
             document.list_styles.each_with_index do |model, i|
               next if model.style_level != 0
-              xml['w'].num({ 'w:numId' => i + 1 }) do
-                xml['w'].abstractNumId({ 'w:val' => i + 1 })
+
+              # numbering definition that doesn't overrides its abstract numbering definition
+              abstract_numbering_definition_id = numbering_definition_id = i + 1
+              xml['w'].num({ 'w:numId' => numbering_definition_id }) do
+                xml['w'].abstractNumId({ 'w:val' => abstract_numbering_definition_id })
+              end
+            end
+
+            # add a numbering definition for each override used in the document
+            document.abstract_numbering_definition_overrides.each do |abstract_numbering_definition_override|
+              list_style_name, list_level, abstract_numbering_definition_id, numbering_definition_id = abstract_numbering_definition_override
+
+              # numbering definition that overrides its abstract numbering definition to restart list_level from 1
+              xml['w'].num({ 'w:numId' => numbering_definition_id }) do
+                xml['w'].abstractNumId({ 'w:val' => abstract_numbering_definition_id })
+                xml['w'].lvlOverride({ 'w:ilvl' => list_level }) do
+                  xml['w'].startOverride({ 'w:val' => 1 })
+                end
               end
             end
           end
-
         end
+
         builder.to_xml(save_options)
       end
 

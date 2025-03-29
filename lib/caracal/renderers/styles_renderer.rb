@@ -78,8 +78,8 @@ module Caracal
                   xml['w'].jc({ 'w:val' => s.style_align.to_s }) unless s.style_align.nil?
                   xml['w'].ind(indentation_options(s)) unless indentation_options(s).nil?
                   xml['w'].numPr do
-                    xml['w'].ilvl({ 'w:val' => s.style_outline_level }) unless s.style_outline_level.nil?  
-                    xml['w'].numId({ 'w:val' => document.list_style_id_for_list_style_name(s.style_list_style) }) unless s.style_list_style.nil?  
+                    xml['w'].ilvl({ 'w:val' => s.style_list_level }) unless s.style_list_level.nil?  
+                    xml['w'].numId({ 'w:val' => document.numbering_definition_id_for_list_style_name(s.style_list_style) }) unless s.style_list_style.nil?  
                   end
                   xml['w'].outlineLvl({ 'w:val' => s.style_outline_level }) unless s.style_outline_level.nil?
                 end
