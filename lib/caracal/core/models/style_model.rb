@@ -45,6 +45,7 @@ module Caracal
         attr_reader :style_top
         attr_reader :style_bottom
         attr_reader :style_line
+        attr_reader :style_keep_next
         attr_reader :style_base
         attr_reader :style_next
         attr_reader :style_indent_left
@@ -87,7 +88,7 @@ module Caracal
         #========== SETTERS ===============================
 
         # booleans
-        [:bold, :italic, :underline, :caps].each do |m|
+        [:bold, :italic, :underline, :caps, :keep_next].each do |m|
           define_method "#{ m }" do |value|
             instance_variable_set("@style_#{ m }", !!value)
           end
@@ -154,6 +155,7 @@ module Caracal
             :bottom,
             :size,
             :line,
+            :keep_next,
             :id,
             :name,
             :color,

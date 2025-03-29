@@ -70,7 +70,7 @@ module Caracal
                 xml['w'].basedOn({ 'w:val' => s.style_base })
                 xml['w'].next({ 'w:val' => s.style_next })
                 xml['w'].pPr do
-                  xml['w'].keepNext({ 'w:val' => '0' })
+                  xml['w'].keepNext({ 'w:val' => (s.style_keep_next ? '1' : '0') })
                   xml['w'].keepLines({ 'w:val' => '0' })
                   xml['w'].widowControl({ 'w:val' => '1' })
                   xml['w'].spacing(spacing_options(s)) unless spacing_options(s).nil?
