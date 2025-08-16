@@ -364,6 +364,12 @@ module Caracal
             xml['w'].tr do
               tc_index = 0
               row.each do |tc|
+                if tc.cell_repeatRow
+                  # repeat header rows
+                  xml['w'].trPr do
+                    xml['w'].tblHeader
+                  end
+                end
                 xml['w'].tc do
                   xml['w'].tcPr do
                     xml['w'].shd({ 'w:fill' => tc.cell_background })

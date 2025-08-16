@@ -28,6 +28,7 @@ module Caracal
         attr_reader :cell_vertical_align
         attr_reader :cell_rowspan
         attr_reader :cell_colspan
+        attr_reader :cell_repeatRow
 
         # initialization
         def initialize(options={}, &block)
@@ -125,6 +126,13 @@ module Caracal
 
         #=============== SETTERS ==============================
 
+        # booleans
+        [:repeatRow].each do |m|
+          define_method "#{ m }" do |value|
+            instance_variable_set("@cell_#{ m }", !!value)
+          end
+        end
+
         # integers
         [:width, :colspan, :rowspan].each do |m|
           define_method "#{ m }" do |value|
@@ -166,7 +174,7 @@ module Caracal
         private
 
         def option_keys
-          [:background, :margins, :width, :vertical_align, :rowspan, :colspan]
+          [:background, :margins, :width, :vertical_align, :rowspan, :colspan, :repeatRow]
         end
 
       end
