@@ -176,9 +176,13 @@ module Caracal
       @abstract_numbering_definition_overrides ||= []
     end
 
+    def next_unused_numbering_definition_id
+      list_styles.count + abstract_numbering_definition_overrides.count + 1
+    end
+
     def generate_new_numbering_definition_id_for_list_style_name_with_restart_for_level(list_style_name, list_level)
       abstract_numbering_definition_id = numbering_definition_id_for_list_style_name(list_style_name)
-      new_numbering_definition_id = abstract_numbering_definition_id + abstract_numbering_definition_overrides.count + 1
+      new_numbering_definition_id = next_unused_numbering_definition_id
       abstract_numbering_definition_overrides << [list_style_name, list_level, abstract_numbering_definition_id, new_numbering_definition_id]
       new_numbering_definition_id
     end
